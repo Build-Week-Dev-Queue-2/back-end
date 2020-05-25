@@ -31,7 +31,7 @@ server.get('/:id', protected, (req, res) => {
         .catch(error => resp(res, error.message, 500));
 })
 
-// -> PUT '/:id' - Delete a user by ID
+// -> PUT '/:id' - Update a user by ID
 server.put('/:id', protected, validateUpdateUser, (req, res) => {
     const { id } = req.params;
     

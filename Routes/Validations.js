@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 // -> Response Function
 const { resp } = require('../Utils');
 
+// -> User Validations
+
 const validateNewUser = async (req, res, next) => {
     if (!req.body || !req.body.username || !req.body.password || !req.body.role_id)
         return resp(res, `Invalid POST request. Make sure 'username', 'password', and 'role_id' are in the body of the request.`, 400);
@@ -82,6 +84,156 @@ const validateUpdateUser = async (req, res, next) => {
     next();
 };
 
+// -> Ticket Validations
+
+const validateNewTicket = async (req, res, next) => {
+    
+    if (!req.body ||
+        !req.body.title ||
+        !req.body.content ||
+        !req.body.author ||
+        !req.body.category_id) {
+        return resp(res, `Please provide 'title', 'content', 'author' (a user id), and 'category_id'.`, 400);
+    }
+
+    // Make sure title is string and is at least one character long.
+    if (typeof req.body.title !== 'string') return resp(res, 'Title must be a string.', 400);
+    if (req.body.title.length <= 0) return resp(res, 'Title must be at least 1 character long.', 400);
+
+    // Make sure content is string and is at least one character long.
+    if (typeof req.body.content !== 'string') return resp(res, 'Content must be a string.', 400);
+    if (req.body.content.length <= 0) return resp(res, 'Content must be at least 1 character long.', 400);
+
+    // Make sure author is valid number.
+    if (isNaN(parseInt(req.body.author))) return resp(resp, 'Author must be a valid user ID.', 400);
+    // Parse author to int
+    if (typeof req.body.author === 'string') req.body.author = parseInt(req.body.author);
+    
+    // Check to make sure author is a valid user.
+    const authorExists = await db.getUserByID(req.body.author);
+    if (!authorExists) return resp(res, 'Author does not exist.', 404);
+
+    // Make sure category ID is valid number.
+    if (isNaN(parseInt(req.body.category_id))) {
+        const cats = await db.getAllCatgories();
+        return resp(resp, {
+            message: 'category_id must be a valid category ID. See below:',
+            categories: cats
+        }, 400);
+    }
+    // Parse category_id to int
+    if (typeof req.body.category_id === 'string') req.body.category_id = parseInt(req.body.category_id);
+    
+    // Check to make sure category is valid.
+    const catExists = await db.getCategoryByID(req.body.category_id);
+    if (!catExists) {
+        const cats = await db.getAllCatgories();
+        return resp(resp, {
+            message: 'category_id must be a valid category ID. See below:',
+            categories: cats
+        }, 400);
+    }
+    
+    // Set defaults.
+    req.body.posted_time = Date.now().toString();
+    req.body.resolved = 'false';
+
+    req.ticket = {
+        title: req.body.title,
+        content: req.body.content,
+        author: req.body.author,
+        category_id: req.body.category_id,
+        posted_time: req.body.posted_time,
+        resolved: req.body.resolved
+    }
+    next();
+}
+
+const validateUpdateTicket = async (req, res, next) => {
+
+    // Validate ID params.
+    if (!req.params.id) return resp(res, 'Please provide a valid ID parameter.', 400);
+    if (isNaN(parseInt(req.params.id))) return resp(res, 'Please provide a valid ID parameter.', 400);
+    const ticketExists = await db.getTicketByID(req.params.id);
+    if (!ticketExists) return resp(resp, 'Ticket does not exist.', 404);
+
+    if (req.body.title) {
+        // Make sure title is string and is at least one character long.
+        if (typeof req.body.title !== 'string') return resp(res, 'Title must be a string.', 400);
+        if (req.body.title.length <= 0) return resp(res, 'Title must be at least 1 character long.', 400);
+    }
+
+    if (req.body.content) {
+        // Make sure title is string and is at least one character long.
+        if (typeof req.body.content !== 'string') return resp(res, 'Title must be a string.', 400);
+        if (req.body.content.length <= 0) return resp(res, 'Title must be at least 1 character long.', 400);
+    }
+
+    if (req.body.posted_time) return resp(res, 'Can not update posted_time.', 400);
+
+    if (req.body.author) {
+        // Make sure author is valid number.
+        if (isNaN(parseInt(req.body.author))) return resp(resp, 'Author must be a valid user ID.', 400);
+        // Parse author to int
+        if (typeof req.body.author === 'string') req.body.author = parseInt(req.body.author);
+        
+        // Check to make sure author is a valid user.
+        const authorExists = await db.getUserByID(req.body.author);
+        if (!authorExists) return resp(res, 'Author does not exist.', 404);
+    }
+
+    if (req.body.resolved) {
+        req.body.resolved = req.body.resolved.toLowerCase();
+        if (req.body.resolved.toLowerCase() !== 'false' && req.body.resolved !== 'true')
+            return resp(res, 'Resolved must be "true" or "false".', 400);
+    }
+
+    if (req.body.resolved_time) {
+        if (isNaN(parseInt(req.body.resolved))) return resp(res, 'resolved_time must be a valid number.', 400);
+        if (typeof req.body.resolved_time === 'string') req.body.resolved_time = parseInt(req.body.resolved_time);
+        if (new Date(req.body.resolved_time).toString() ===  'Invalid Date') return resp(res, 'resolved_time must be a valid date number.', 400);
+    }
+
+    if (req.body.resolved_by) {
+        // Make sure resolved_by is valid number.
+        if (isNaN(parseInt(req.body.resolved_by))) return resp(resp, 'Resolved_by must be a valid user ID.', 400);
+        // Parse resolved_by to int
+        if (typeof req.body.resolved_by === 'string') req.body.resolved_by = parseInt(req.body.resolved_by);
+        
+        // Check to make sure resolved_by is a valid user.
+        const resolvedbyExists = await db.getUserByID(req.body.resolved_by);
+        if (!resolvedbyExists) return resp(res, 'Resolved_by does not exist.', 404);
+    }
+
+    if (req.body.category_id) {
+        // Make sure category ID is valid number.
+        if (isNaN(parseInt(req.body.category_id))) {
+            const cats = await db.getAllCatgories();
+            return resp(resp, {
+                message: 'category_id must be a valid category ID. See below:',
+                categories: cats
+            }, 400);
+        }
+        // Parse category_id to int
+        if (typeof req.body.category_id === 'string') req.body.category_id = parseInt(req.body.category_id);
+        
+        // Check to make sure category is valid.
+        const catExists = await db.getCategoryByID(req.body.category_id);
+        if (!catExists) {
+            const cats = await db.getAllCatgories();
+            return resp(resp, {
+                message: 'category_id must be a valid category ID. See below:',
+                categories: cats
+            }, 400);
+        }
+    }
+
+    req.ticket = req.body;
+    next();
+}
+
+// -> Authentication Validations
+
 const validateLogin = async (req, res, next) => {
     if (!req.body || !req.body.username || !req.body.password)
         return resp(res, `Invalid POST request. Make sure 'username' and 'password' are in the body of the request.`, 400);
@@ -116,8 +268,15 @@ const protected = async (req, res, next) => {
 }
 
 module.exports = {
-    protected,
-    validateLogin,
+    // -> User Validations
     validateNewUser,
-    validateUpdateUser
+    validateUpdateUser,
+
+    // -> Authentication Validations
+    validateLogin,
+    protected,
+
+    // -> Ticket Validations
+    validateNewTicket,
+    validateUpdateTicket
 }
