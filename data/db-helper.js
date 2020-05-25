@@ -166,4 +166,8 @@ module.exports = {
     // -> Role Functions
     getAllRoles: () => db('roles'),
     getRoleByID: id => db('roles').where({ id }),
+
+    // -> Category Functions
+    getAllCatgories: () => db('categories'),
+    getCategoryByID: id => db('categories').where({ id }),
 }
