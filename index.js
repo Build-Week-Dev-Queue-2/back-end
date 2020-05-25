@@ -2,9 +2,6 @@
 const express = require('express');
 const server = express();
 
-// -> Environment Variables
-require('dotenv').config()
-
 server.use(express.json());
 
 server.get('/', (req, res) => { 
