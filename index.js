@@ -7,6 +7,12 @@ require('dotenv').config()
 
 server.use(express.json());
 
+server.get('/', (req, res) => { 
+    res.status(200).json({
+        message: "Welcome to DevDeskQueue Backend!",
+    })
+});
+
 // -> Routes
 server.use('/api/users', require('./Routes/Users'));
 server.use('/auth', require('./Routes/Auth'));
