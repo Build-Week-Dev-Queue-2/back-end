@@ -184,6 +184,7 @@ const validateUpdateTicket = async (req, res, next) => {
 
     if (req.body.resolved) {
         req.body.resolved = req.body.resolved.toLowerCase();
+        if (typeof req.body.resolved === 'boolean') req.body.resolved = req.body.resolved.toString();
         if (req.body.resolved.toLowerCase() !== 'false' && req.body.resolved !== 'true')
             return resp(res, 'Resolved must be "true" or "false".', 400);
     }
