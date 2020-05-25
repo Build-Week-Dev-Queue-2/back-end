@@ -1,9 +1,23 @@
+
 ## DevDeskQueue Team #2 Backend 
-	Backend URL: https://devdeskqueue2backend.herokuapp.com/
+	Backend URL: To be announced.
 
 ## Schemas
 	Users: {
-		id, username, password
+		id: primary key
+		username: string
+		password: string
+	},
+	Tickets: {
+		id: primary key
+		title: string
+		content: string
+		posted_time: Date.now() Integer
+		author: User ID
+		resolved: boolean as string ('true'/'false')
+		resolved_by: User ID
+		resolved_time: Date.now() Integer
+		category_id: Category ID
 	}
 ## Endpoints
 	Notes:
@@ -16,40 +30,26 @@
 	**Authentication Endpoints**
 	--------------------------
 	-> POST "/auth/login"
-	Request Body:
-	{
-		"username": *Required*
-		"password": *Required*
-	}
-	Response Status: 200
-	Response Body:
-	{
-		message: `Welcome back, ${username}!`,
-		user: * Logged-in User Object *
-		token: * Generated JWT Token, for further requests. *
-	}
+		- Returns welcome message, logged-in user object, and authentication token.
+		- Request Body
+			- username - Required.
+			- password - Required.
+		- Response Status: 200
 	--------------------------
 	-> POST "/auth/register"
-	Request Body
-	{
-		"username": *Required*
-		"password": *Required*
-		"role_id": *Required*
-	}
-	Response Status: 201
-	Response Body:
-	{
-		message: `${username} created successfully.`,
-		user: * Logged-in User Object *
-		token: * Generated JWT Token, for further requests. *
-	}
-	Notes:
-		- Do not pass an ID - the database automatically generates the ID.
-		- Roles:
-			- 1: Student
-			- 2: Helper
-			- 3: Student & Helper
-		- 'role_id' can be passed as string or integer, so don't worry about parsing.
+		- Returns success message, user object, and authentication token.
+		- Request Body
+			- username - Required.
+			- password - Required
+			- role_id - Required.
+		- Response Status: 201
+		- Notes:
+			- Do not pass an ID - the database automatically generates the ID.
+			- Roles:
+				- 1: Student
+				- 2: Helper
+				- 3: Student & Helper
+			- 'role_id' can be passed as string or integer, so don't worry about parsing.
 ---
 #### User Endpoints
 	--------------------------
@@ -62,7 +62,7 @@
 		- Returns a single user object by ID.
 		- Status: 200.
 	-> PUT '/api/users/${id}'
-		- Request body must contain one or more of the following to update:
+		- Request Body (one or more):
 			- Username -> 'username'
 			- Password -> 'password'
 			- RoleID -> 'role_id'
@@ -71,3 +71,37 @@
 	-> DELETE '/api/users/${id}'
 		- Deletes a single user by ID.
 		- Response body will return: 'User #${id} was deleted.'
+---
+#### Ticket Endpoints
+	--------------------------
+	**Ticket Endpoints**
+	--------------------------
+	-> GET '/api/tickets'
+		- Returns an array of all tickets.
+		- Status: 200.
+	-> GET '/api/tickets/${id}'
+		- Returns a single ticket object by ID.
+		- Status: 200.
+	-> POST '/'
+		- Returns the newly created ticket object.
+		- Request Body
+			- title - Required.
+			- conent - Required.
+			- author - Required.
+			- category_id - Required.
+		- Response Status: 201.
+		- 'posted_time' is set by default.
+		- 'resolved' is set by default.
+		- 'resolved_by' and 'resolved_time' are null in database by default.
+	-> PUT '/api/tickets/${id}'
+		- Request body must contain one or more of the following to update:
+			- Title -> 'title'
+			- Content -> 'conent'
+			- Author -> 'author' (user id)
+			- Resolved -> 'resolved' ('true' or 'false')
+			- Resolved Time -> 'resolved_time' (*must* be a valid Date.now() integer)
+			- Resolved By -> 'resolved_by' (user id)
+			- Category ID -> 'category_id'
+		- Returns a single ticket object of the updated ticket information.
+		- 'posted_time' can not be updated.
+		- Status: 200.
