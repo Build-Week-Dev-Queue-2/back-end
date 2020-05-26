@@ -48,7 +48,6 @@ server.post('/register', validateNewUser, (req, res) => {
 });
 
 const newToken = user => {
-    console.log(user);
     const { userid, id, username, role_id, roleid } = user;
 
     const payload = {
