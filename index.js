@@ -2,6 +2,8 @@
 const express = require('express');
 const server = express();
 
+if(!process.env.ENV) {require('dotenv').config()}
+
 server.use(express.json());
 
 server.get('/', (req, res) => { 
