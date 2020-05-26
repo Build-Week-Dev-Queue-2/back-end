@@ -8,7 +8,7 @@ const db = require('../data/db-helper');
 const jwt = require('jsonwebtoken');
 
 // -> Response Function
-const { resp } = require('../Utils');
+const { resp, removePassword } = require('../Utils');
 
 const {
     validateNewUser,
@@ -20,7 +20,9 @@ server.post('/login', validateLogin, async (req, res) => {
     const token = await newToken(user);
     return resp(res, {
         message: `Welcome back, ${user.username}!`,
-        user,
+        user: {
+            ...removePassword(user)
+        },
         token,
     }, 200);
 });
@@ -28,20 +30,13 @@ server.post('/login', validateLogin, async (req, res) => {
 server.post('/register', validateNewUser, (req, res) => {
     let { user } = req;
     return db.addUser(user)
-        .then(async () => {
-            const { username, role_id } = user;
-            user = {
-                id: resp[0],
-                username,
-                role_id
-            }
+        .then(async ([id]) => {
+            const madeUser = await db.getUserByID(id);
+            
             const token = await newToken(user);
             return resp(res, {
                 message: `${user.username} created successfully.`,
-                user: {
-                    id: resp[0],
-                    ...user,
-                },
+                user: removePassword(madeUser),
                 token,
             }, 201);
         })

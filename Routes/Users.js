@@ -11,7 +11,7 @@ const {
 } = require('./Validations');
 
 // -> Response Function
-const { resp } = require('../Utils');
+const { resp, removePassword } = require('../Utils');
 
 // -> GET '/' - All users.
 server.get('/', protected, (req, res) => {
@@ -52,20 +52,5 @@ server.delete('/:id', protected, (req, res) => {
         .then(async () => resp(res, `User #${id} was deleted.`))
         .catch(error => resp(res, error.message, 500));
 })
-
-const removePassword = list => {
-    if (!list.length) { 
-        const { userid, username, role, roleid } = list;
-        return {
-            userid, username, role, roleid
-        }
-    }
-    return list.map(user => {
-        const { userid, username, role, roleid } = user;
-        return {
-            userid, username, role, roleid
-        }
-    })
-}
 
 module.exports = server;

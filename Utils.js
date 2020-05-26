@@ -14,5 +14,16 @@ module.exports = {
                 message: obj
             })
         }
+    },
+    removePassword: list => {
+        if (!list.length) {
+            // Remove password from single user.
+            delete list.password;
+            return list;
+        }
+        return list.map(user => {
+            delete user.password;
+            return user;
+        })
     }
 }
