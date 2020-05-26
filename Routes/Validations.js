@@ -42,6 +42,8 @@ const validateNewUser = async (req, res, next) => {
 };
 
 const validateUpdateUser = async (req, res, next) => {
+    let final = {};
+
     if (!req.body)
         return resp(res, 'Nothing was provided in the body to update.', 400);
     if (!req.params.id || parseInt(req.params.id) <= 0 || isNaN(parseInt(req.params.id)))
@@ -52,11 +54,22 @@ const validateUpdateUser = async (req, res, next) => {
 
     if (req.body.username) {
         const exists = await db.getUserByName(req.body.username);
-        if (exists)
-            return resp(res, 'Username already exists.', 400);
+        if (exists) return resp(res, 'Username already exists.', 400);
+    
+        final = {
+            ...final,
+            username: req.body.username,
+        }
     }
 
-    if (req.body.password) req.body.password = await bcrypt.hashSync(req.body.password, 10);
+    if (req.body.password) {
+        req.body.password = await bcrypt.hashSync(req.body.password, 10);
+
+        final = {
+            ...final,
+            password: req.body.password,
+        }
+    }
 
     if (req.body.role_id) {
         try {
@@ -76,11 +89,15 @@ const validateUpdateUser = async (req, res, next) => {
         }
 
         const roleExists = db.getRoleByID(req.body.role_id);
-        if (!roleExists)
-            return resp(res, 'Role does not exist.', 404);
+        if (!roleExists) return resp(res, 'Role does not exist.', 404);
+
+        final = {
+            ...final,
+            role_id: req.body.role_id,
+        }
     }
 
-    req.user = req.body;
+    req.user = final;
     next();
 };
 
@@ -150,6 +167,7 @@ const validateNewTicket = async (req, res, next) => {
 }
 
 const validateUpdateTicket = async (req, res, next) => {
+    let final = {};
 
     // Validate ID params.
     if (!req.params.id) return resp(res, 'Please provide a valid ID parameter.', 400);
@@ -161,12 +179,20 @@ const validateUpdateTicket = async (req, res, next) => {
         // Make sure title is string and is at least one character long.
         if (typeof req.body.title !== 'string') return resp(res, 'Title must be a string.', 400);
         if (req.body.title.length <= 0) return resp(res, 'Title must be at least 1 character long.', 400);
+        final = {
+            ...final,
+            title: req.body.title,
+        }
     }
 
     if (req.body.content) {
         // Make sure title is string and is at least one character long.
         if (typeof req.body.content !== 'string') return resp(res, 'Title must be a string.', 400);
         if (req.body.content.length <= 0) return resp(res, 'Title must be at least 1 character long.', 400);
+        final = {
+            ...final,
+            content: req.body.content,
+        }
     }
 
     if (req.body.posted_time) return resp(res, 'Can not update posted_time.', 400);
@@ -180,6 +206,10 @@ const validateUpdateTicket = async (req, res, next) => {
         // Check to make sure author is a valid user.
         const authorExists = await db.getUserByID(req.body.author);
         if (!authorExists) return resp(res, 'Author does not exist.', 404);
+        final = {
+            ...final,
+            author: req.body.author,
+        }
     }
 
     if (req.body.resolved) {
@@ -187,12 +217,21 @@ const validateUpdateTicket = async (req, res, next) => {
         if (typeof req.body.resolved === 'boolean') req.body.resolved = req.body.resolved.toString();
         if (req.body.resolved.toLowerCase() !== 'false' && req.body.resolved !== 'true')
             return resp(res, 'Resolved must be "true" or "false".', 400);
+        final = {
+            ...final,
+            resolved: req.body.resolved,
+        }
     }
 
     if (req.body.resolved_time) {
         if (isNaN(parseInt(req.body.resolved))) return resp(res, 'resolved_time must be a valid number.', 400);
         if (typeof req.body.resolved_time === 'string') req.body.resolved_time = parseInt(req.body.resolved_time);
-        if (new Date(req.body.resolved_time).toString() ===  'Invalid Date') return resp(res, 'resolved_time must be a valid date number.', 400);
+        if (new Date(req.body.resolved_time).toString() === 'Invalid Date') return resp(res, 'resolved_time must be a valid date number.', 400);
+        
+        final = {
+            ...final,
+            resolved_time: req.body.resolved_time,
+        }
     }
 
     if (req.body.resolved_by) {
@@ -204,6 +243,11 @@ const validateUpdateTicket = async (req, res, next) => {
         // Check to make sure resolved_by is a valid user.
         const resolvedbyExists = await db.getUserByID(req.body.resolved_by);
         if (!resolvedbyExists) return resp(res, 'Resolved_by does not exist.', 404);
+
+        final = {
+            ...final,
+            resolved_by: req.body.resolved_by,
+        }
     }
 
     if (req.body.category_id) {
@@ -227,10 +271,118 @@ const validateUpdateTicket = async (req, res, next) => {
                 categories: cats
             }, 400);
         }
+
+        final = {
+            ...final,
+            category_id: req.body.category_id,
+        }
     }
 
-    req.ticket = req.body;
+    req.ticket = final;
     next();
+}
+
+// -> Comment Validations
+
+const validateNewComment = async (req, res, next) => {
+    if (!req.body ||
+        !req.body.message ||
+        !req.body.author ||
+        !req.body.ticket_id) {
+        return resp(res, `Please provide 'message', 'author', and 'ticket_id'.`, 400);
+    }
+
+    // Make sure message is a string with at least one character.
+    if(typeof req.body.message !== 'string' || req.body.message.length <= 0) return resp(res, 'Message must be a string with one or more characters.', 400);
+
+    // Make sure author is valid number.
+    if (isNaN(parseInt(req.body.author))) return resp(resp, 'Author must be a valid user ID.', 400);
+    // Parse author to int
+    if (typeof req.body.author === 'string') req.body.author = parseInt(req.body.author);
+    
+    // Check to make sure author is a valid user.
+    const authorExists = await db.getUserByID(req.body.author);
+    if (!authorExists) return resp(res, 'Author does not exist.', 404);
+
+    // Make sure author is valid number.
+    if (isNaN(parseInt(req.body.ticket_id))) return resp(resp, 'Ticket ID must be a valid number.', 400);
+    // Parse author to int
+    if (typeof req.body.ticket_id === 'string') req.body.ticket_id = parseInt(req.body.ticket_id);
+    
+    // Check to make sure author is a valid user.
+    const ticketExists = await db.getUserByID(req.body.ticket);
+    if (!ticketExists) return resp(res, 'Ticket does not exist.', 404);
+
+    // Set defaults.
+    req.body.posted_time = Date.now().toString();
+
+    req.comment = {
+        message: req.body.message,
+        author: req.body.author,
+        ticket_id: req.body.ticket_id,
+        posted_time: req.body.posted_time
+    }
+    next();
+}
+
+const validateUpdateComment = async (req, res, next) => {
+    let final = {};
+    
+    // Validate ID params.
+    if (!req.params.id) return resp(res, 'Please provide a valid ID parameter.', 400);
+    if (isNaN(parseInt(req.params.id))) return resp(res, 'Please provide a valid ID parameter.', 400);
+    const commentExists = await db.getCommentByID(req.params.id);
+    if (!commentExists) return resp(resp, 'Comment does not exist.', 404);
+
+    if (req.body.id) return resp(res, 'ID can not be updated.', 400);
+    if (req.body.posted_time) return resp(res, 'Posted time can not be updated.', 400);
+
+    if (req.body.author) {
+        // Make sure author is valid number.
+        if (isNaN(parseInt(req.body.author))) return resp(resp, 'Author must be a valid user ID.', 400);
+        // Parse author to int
+        if (typeof req.body.author === 'string') req.body.author = parseInt(req.body.author);
+        
+        // Check to make sure author is a valid user.
+        const authorExists = await db.getUserByID(req.body.author);
+        if (!authorExists) return resp(res, 'Author does not exist.', 404);
+
+        final = {
+            ...final,
+            author: req.body.author,
+        }
+    }
+
+    if (req.body.message) {
+        // Make sure message is string and is at least one character long.
+        if (typeof req.body.message !== 'string') return resp(res, 'Message must be a string.', 400);
+        if (req.body.message.length <= 0) return resp(res, 'Message must be at least 1 character long.', 400);
+        
+        final = {
+            ...final,
+            message: req.body.message,
+        }
+    }
+
+    if (req.body.ticket_id) {
+        // Make sure author is valid number.
+        if (isNaN(parseInt(req.body.ticket_id))) return resp(resp, 'Ticket ID must be a valid number.', 400);
+        // Parse author to int
+        if (typeof req.body.ticket_id === 'string') req.body.ticket_id = parseInt(req.body.ticket_id);
+        
+        // Check to make sure author is a valid user.
+        const ticketExists = await db.getUserByID(req.body.ticket);
+        if (!ticketExists) return resp(res, 'Ticket does not exist.', 404);
+
+        final = {
+            ...final,
+            ticket_id: req.body.ticket_id,
+        }
+    }
+
+    req.comment = final;
+    next();
+
 }
 
 // -> Authentication Validations
@@ -279,5 +431,9 @@ module.exports = {
 
     // -> Ticket Validations
     validateNewTicket,
-    validateUpdateTicket
+    validateUpdateTicket,
+
+    // -> Comment Validations
+    validateNewComment,
+    validateUpdateComment,
 }

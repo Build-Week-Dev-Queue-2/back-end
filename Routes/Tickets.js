@@ -30,6 +30,15 @@ server.get('/:id', protected, (req, res) => {
         .catch(error => resp(res, error.message, 500));
 })
 
+// -> GET '/:id/comments' - Get all comments by ticket ID.
+server.get('/:id/comments', (req, res) => {
+    const { id } = req.params;
+
+    return db.getCommentsByTicketID(id)
+        .then(comments => resp(res, comments))
+        .catch(error => resp(res, error.message, 500));
+})
+
 // -> PUT '/:id' - Update a ticket by ID
 server.put('/:id', protected, validateUpdateTicket, (req, res) => {
     const { id } = req.params;
