@@ -13,6 +13,7 @@ server.get('/', (req, res) => {
 // -> Routes
 server.use('/api/users', require('./Routes/Users'));
 server.use('/api/tickets', require('./Routes/Tickets'));
+server.use('/api/comments', require('./Routes/Comments'));
 server.use('/auth', require('./Routes/Auth'));
 
 const port = process.env.PORT || 5000;
