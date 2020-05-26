@@ -18,6 +18,13 @@
 		resolved_by: User ID
 		resolved_time: Date.now() Integer
 		category_id: Category ID
+	},
+	Comments: {
+		id: primary key,
+		message: string,
+		author: User ID,
+		ticket_id: Ticket ID,
+		posted_time: Date.now() Integer
 	}
 ## Endpoints
 	Notes:
@@ -82,6 +89,9 @@
 	-> GET '/api/tickets/${id}'
 		- Returns a single ticket object by ID.
 		- Status: 200.
+	-> GET '/api/tickets/${id}/comments'
+		- Returns all comments for a given Ticket ID.
+		- Status: 200.
 	-> POST '/'
 		- Returns the newly created ticket object.
 		- Request Body
@@ -103,5 +113,32 @@
 			- Resolved By -> 'resolved_by' (user id)
 			- Category ID -> 'category_id'
 		- Returns a single ticket object of the updated ticket information.
+		- 'posted_time' can not be updated.
+		- Status: 200.
+---
+#### Comment Endpoints
+	--------------------------
+	**Comment Endpoints**
+	--------------------------
+	-> GET '/api/comments'
+		- Returns an array of all comments.
+		- Status: 200.
+	-> GET '/api/comments/${id}'
+		- Returns a single comment object by ID.
+		- Status: 200.
+	-> POST '/'
+		- Returns the newly created comment object.
+		- Request Body
+			- message - Required.
+			- author - Required.
+			- ticket_id - Required.
+		- Response Status: 201.
+		- 'posted_time' is set by default.
+	-> PUT '/api/comments/${id}'
+		- Request body must contain one or more of the following to update:
+			- Message -> 'message'
+			- Author -> 'author' (user id)
+			- TicketID -> 'ticket_id'
+		- Returns a single comment object of the updated comment information.
 		- 'posted_time' can not be updated.
 		- Status: 200.
