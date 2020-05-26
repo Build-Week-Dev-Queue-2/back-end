@@ -1,6 +1,6 @@
 
 ## DevDeskQueue Team #2 Backend 
-	Backend URL: To be announced.
+	Backend URL: https://devdeskqueue2backend.herokuapp.com/
 
 ## Schemas
 	Users: {

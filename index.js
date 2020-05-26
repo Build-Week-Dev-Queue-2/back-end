@@ -2,8 +2,12 @@
 const express = require('express');
 const server = express();
 
+// -> CORS
+const cors = require('cors');
+
 if(!process.env.ENV) {require('dotenv').config()}
 
+server.use(cors());
 server.use(express.json());
 
 server.get('/', (req, res) => { 
