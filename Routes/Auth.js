@@ -20,6 +20,7 @@ server.post('/login', validateLogin, async (req, res) => {
     const token = await newToken(user);
     return resp(res, {
         message: `Welcome back, ${user.username}!`,
+        user,
         token,
     }, 200);
 });
