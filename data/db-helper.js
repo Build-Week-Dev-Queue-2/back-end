@@ -11,6 +11,7 @@ module.exports = {
             'u.id as user_id',
             'u.username',
             'u.password',
+            'u.slack_id',
             'r.role',
             'u.role_id'
         ),
@@ -21,6 +22,7 @@ module.exports = {
             'u.id as user_id',
             'u.username',
             'u.password',
+            'u.slack_id',
             'r.role',
             'r.id as role_id'
         )
@@ -32,12 +34,22 @@ module.exports = {
             'u.id as user_id',
             'u.username',
             'u.password',
+            'u.slack_id',
             'r.role',
             'r.id as role_id'
         )
         .first(),
     getUserBySlackID: id => db('users as u')
         .where('u.slack_id', id)
+        .join('roles as r', 'u.role_id', '=', 'r.id')
+        .select(
+            'u.id as user_id',
+            'u.username',
+            'u.password',
+            'u.slack_id',
+            'r.role',
+            'r.id as role_id'
+        )
         .first(),
     addUser: user => db('users').insert(user),
     updateUser: (id, update) => db('users').where({ id }).update(update),
