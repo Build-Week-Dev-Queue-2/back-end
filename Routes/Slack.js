@@ -9,13 +9,11 @@ const bc = require('bcryptjs');
 
 server.post('/devdesk', async (req, res) => {
     const text = req.body.text;
-    console.log(req.body);
     const slack_id = req.body.user_id;
-    return res.status(200).send(slack_id);
     // -> /devdesk [connect] [username -p password]
     // -> /devdesk connect -u username -p password
     // Check if user_id is valid.
-    const userExists = await db.getUserBySlackID(user_id);
+    const userExists = await db.getUserBySlackID(slack_id);
     if (!userExists) {
         // Check to see if they were trying to connect. Else, send error message.
         const textSplitSpaces = text.trim().split(' ');
