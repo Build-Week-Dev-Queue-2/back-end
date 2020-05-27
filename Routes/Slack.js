@@ -30,6 +30,8 @@ server.post('/devdesk', async (req, res) => {
 
             if (user.slack_id) return res.status(200).send('This user already has a SlackID, please contact an administrator to reset.');
 
+            console.log(user.user_id, slack_id);
+
             await db.updateUser(user.user_id, {
                 slack_id,
             })
