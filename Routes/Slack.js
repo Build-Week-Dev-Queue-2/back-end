@@ -7,6 +7,10 @@ const db = require('../data/db-helper');
 // -> BCrypt
 const bc = require('bcryptjs');
 
+/**
+ * /devdesk connect -u Michael Scott -p TheOffice
+ */
+
 server.post('/devdesk', async (req, res) => {
     const text = req.body.text;
     const slack_id = req.body.user_id;
@@ -23,7 +27,6 @@ server.post('/devdesk', async (req, res) => {
             const user = await confirmCredentials(res, username, password);
             if (!user) return res.status(200).send('Something went wrong.');
 
-            console.log(user);
 
             if (user.slack_id) return res.status(200).send('This user already has a SlackID, please contact an administrator to reset.');
 
@@ -41,10 +44,10 @@ server.post('/devdesk', async (req, res) => {
 const confirmCredentials = async (res, u, p) => {
     const user = await db.getUserByName(u);
     if (!user) return res.status(200).send(`Oops! You entered invalid credentials.`);
-    return res.status(200).send(JSON.stringify(user));
+
     const correctPassword = await bc.compareSync(p, user.password);
     if (!correctPassword) return res.status(200).send('Oops! You entered invalid credentials.');
-    console.log(user);
+
     return user;
 }
 
