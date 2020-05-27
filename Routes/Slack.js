@@ -47,6 +47,7 @@ server.post('/devdesk', async (req, res) => {
             content,
             author: user.user_id,
             category_id: 4,
+            posted_time: Date.now()
         }
 
         await db.addTicket(ticket).then(() => {
