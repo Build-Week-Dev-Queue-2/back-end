@@ -8,6 +8,7 @@ exports.seed = function(knex) {
         { name: "Technical Support" },
         { name: "Leave of Absense" },
         { name: "Student Support" },
+        { name: "Slack Question" },
       ]);
     });
 };
