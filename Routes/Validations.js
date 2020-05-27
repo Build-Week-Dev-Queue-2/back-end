@@ -393,6 +393,8 @@ const validateLogin = async (req, res, next) => {
 
     const user = await db.getUserByName(req.body.username);
 
+    console.log(user.password);
+
     if (!user)
         return resp(res, 'Invalid credentials.', 400);
 
