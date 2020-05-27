@@ -42,7 +42,19 @@ server.post('/devdesk', async (req, res) => {
         const user = userExists;
         const title = text.split('/').trim()[0], content = text.split('/').trim()[1];
         
-        return res.status(200).send(`${title} ${content}`);
+        const ticket = {
+            title,
+            content,
+            author: user.user_id,
+            category_id: 4,
+        }
+
+        await db.addTicket(ticket).then(() => {
+            return res.status(200).send(`Your ticket has been submitted to your dashboard.`);
+        }).catch(err => {
+            console.log(err);
+            return res.status(200).send(err.message);
+        })
     }
 })
 
