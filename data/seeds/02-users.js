@@ -7,10 +7,9 @@ exports.seed = function(knex) {
       // Inserts seed entries
       const password = await bc.hashSync('pass', 10);
       return knex('users').insert([
-        {username: "Pamela Halpert", password, role_id: 1},
-        {username: "James Halpert", password, role_id: 1},
-        {username: "Michael Scott", password, role_id: 2},
-        {username: "admin", password, role_id: 2},
+        {id: 1, username: "admin", password, role_id: 2},
+        {id: 2, username: "Dwight", password, role_id: 1},
+        {id: 3, username: "Frodo", password, role_id: 1},
       ]);
     });
 };

@@ -392,12 +392,11 @@ const validateLogin = async (req, res, next) => {
         return resp(res, `Invalid POST request. Make sure 'username' and 'password' are in the body of the request.`, 400);
 
     const user = await db.getUserByName(req.body.username);
-
-    console.log(user.password);
-
     if (!user)
         return resp(res, 'Invalid credentials.', 400);
 
+    console.log(user.password);
+    
     const correctPassword = await bcrypt.compareSync(req.body.password, user.password);
 
     if (!correctPassword)
