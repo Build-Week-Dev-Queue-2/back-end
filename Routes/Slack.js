@@ -40,7 +40,7 @@ server.post('/devdesk', async (req, res) => {
         } else return res.status(200).send(`Oops! Your slack account isn't connected. Type /devdesk connect -u [username] -p [password] to connect.`);
     } else {
         const user = userExists;
-        const title = text.split('/').trim()[0], content = text.split('/').trim()[1];
+        const title = text.split('/')[0].trim(), content = text.split('/')[1].trim();
         
         const ticket = {
             title,
