@@ -44,7 +44,7 @@ const confirmCredentials = async (res, u, p) => {
 
     const correctPassword = await bc.compareSync(p, user.password);
     if (!correctPassword) return res.status(200).send('Oops! You entered invalid credentials.');
-
+    console.log(user);
     return user;
 }
 
