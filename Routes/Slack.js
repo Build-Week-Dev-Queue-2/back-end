@@ -10,8 +10,8 @@ const bc = require('bcryptjs');
 server.post('/devdesk', async (req, res) => {
     const text = req.body.text;
     console.log(req.body);
-    return res.status(200).send(req.body.user_id);
     const slack_id = req.body.user_id;
+    return res.status(200).send(slack_id);
     // -> /devdesk [connect] [username -p password]
     // -> /devdesk connect -u username -p password
     // Check if user_id is valid.
