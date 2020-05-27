@@ -41,7 +41,7 @@ server.post('/devdesk', async (req, res) => {
 const confirmCredentials = async (res, u, p) => {
     const user = await db.getUserByName(u);
     if (!user) return res.status(200).send(`Oops! You entered invalid credentials.`);
-
+    return res.status(200).send(JSON.stringify(user));
     const correctPassword = await bc.compareSync(p, user.password);
     if (!correctPassword) return res.status(200).send('Oops! You entered invalid credentials.');
     console.log(user);
