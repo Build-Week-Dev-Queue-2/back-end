@@ -36,6 +36,9 @@ module.exports = {
             'r.id as role_id'
         )
         .first(),
+    getUserBySlackID: id => db('users as u')
+        .where('u.slack_id', id)
+        .first(),
     addUser: user => db('users').insert(user),
     updateUser: (id, update) => db('users').where({ id }).update(update),
     removeUser: id => db('users').where({ id }).del(),

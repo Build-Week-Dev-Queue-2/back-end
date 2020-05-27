@@ -18,6 +18,7 @@ exports.up = function (knex) {
             tbl.increments();
             tbl.text('username').notNullable();
             tbl.text('password').notNullable();
+            tbl.text("slack_id");
             tbl.integer('role_id')
                 .notNullable()
                 .unsigned()
@@ -41,14 +42,14 @@ exports.up = function (knex) {
             tbl.text('resolved').notNullable();
             tbl.text('resolved_time');
             tbl.integer('resolved_by')
-                .unsigned()
-                .references('id')
-                .inTable('users');
+            .unsigned()
+            .references('id')
+            .inTable('users');
             tbl.integer('category_id')
-                .notNullable()
-                .unsigned()
-                .references('id')
-                .inTable('categories');
+            .notNullable()
+            .unsigned()
+            .references('id')
+            .inTable('categories');
         })
         .createTable('comments', tbl => {
             tbl.increments();
