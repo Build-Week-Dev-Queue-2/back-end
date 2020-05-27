@@ -16,10 +16,16 @@ server.get('/', (req, res) => {
     })
 });
 
+// -> Slack
+const token = process.env.SLACK_TOKEN;
+const Slack = require('slack');
+const bot = new Slack({ token });
+
 // -> Routes
 server.use('/api/users', require('./Routes/Users'));
 server.use('/api/tickets', require('./Routes/Tickets'));
 server.use('/api/comments', require('./Routes/Comments'));
+server.use('/slack', require('./Routes/Slack'));
 server.use('/auth', require('./Routes/Auth'));
 
 const port = process.env.PORT || 5000;
