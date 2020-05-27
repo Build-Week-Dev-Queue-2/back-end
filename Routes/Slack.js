@@ -15,10 +15,9 @@ server.post('/devdesk', async (req, res) => {
         const textSplitSpaces = text.trim().split(' ');
         if (textSplitSpaces[0].toLowerCase() === 'connect') {
             if (!text.toLowerCase().includes('-u') || !text.toLowerCase().includes('-p')) return res.status(200).send(`Oops! Please provide a '-u [username]' and '-p [password]' to connect.`); 
-            const   username = text.split(' -u ')[1].split(' -p ')[0],
-                password = text.split(' -u ')[1].split(' -p ')[1];
+            const   username = text.split(' -u ')[1].split(' -p ')[0], password = text.split(' -u ')[1].split(' -p ')[1];
             console.log(username, password);
-            return res.sendStatus(200);
+            return res.status(200).send(`${username} ${password}`);
         } else return res.status(200).send(`Oops! Your slack account isn't connected. Type /devdesk connect -u [username] -p [password] to connect.`);
     }
 
