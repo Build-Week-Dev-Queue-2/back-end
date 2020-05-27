@@ -5,10 +5,16 @@ const server = express();
 // -> CORS
 const cors = require('cors');
 
+// -> Body Parsing
+const bp = require('body-parser');
+
 if(!process.env.ENV) {require('dotenv').config()}
 
 server.use(cors());
-server.use(express.json());
+server.use(bp.json());
+server.use(bp.urlencoded({
+    extended: true,
+}))
 
 server.get('/', (req, res) => { 
     res.status(200).json({
