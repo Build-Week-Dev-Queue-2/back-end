@@ -3,12 +3,13 @@ const bc = require('bcryptjs')
 exports.seed = function(knex) {
   // Deletes ALL existing entries
   return knex('users').del()
-    .then(function () {
+    .then(async function () {
       // Inserts seed entries
+      const password = await bc.hashSync('pass', 10);
       return knex('users').insert([
-        {username: "Pamela Halpert", password: bc.hash("The Office", 10), role_id: 1},
-        {username: "James Halpert", password: bc.hash("The Office", 10), role_id: 1},
-        {username: "Michael Scott", password: bc.hash("The Office", 10), role_id: 2},
+        {username: "Pamela Halpert", password, role_id: 1},
+        {username: "James Halpert", password, role_id: 1},
+        {username: "Michael Scott", password, role_id: 2},
         {username: "admin", password: bc.hash("pass", 10), role_id: 2},
       ]);
     });
