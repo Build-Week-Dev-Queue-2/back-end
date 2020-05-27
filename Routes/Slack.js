@@ -23,6 +23,8 @@ server.post('/devdesk', async (req, res) => {
             const user = await confirmCredentials(res, username, password);
             if (!user) return res.status(200).send('Something went wrong.');
 
+            console.log(user);
+
             if (user.slack_id) return res.status(200).send('This user already has a SlackID, please contact an administrator to reset.');
 
             await db.updateUser(user.user_id, {
@@ -42,8 +44,6 @@ const confirmCredentials = async (res, u, p) => {
 
     const correctPassword = await bc.compareSync(p, user.password);
     if (!correctPassword) return res.status(200).send('Oops! You entered invalid credentials.');
-
-
 
     return user;
 }
