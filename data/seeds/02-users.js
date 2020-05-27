@@ -10,7 +10,7 @@ exports.seed = function(knex) {
         {username: "Pamela Halpert", password, role_id: 1},
         {username: "James Halpert", password, role_id: 1},
         {username: "Michael Scott", password, role_id: 2},
-        {username: "admin", password: bc.hash("pass", 10), role_id: 2},
+        {username: "admin", password, role_id: 2},
       ]);
     });
 };
