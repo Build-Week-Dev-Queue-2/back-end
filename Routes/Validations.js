@@ -224,7 +224,7 @@ const validateUpdateTicket = async (req, res, next) => {
     }
 
     if (req.body.resolved_time) {
-        if (isNaN(parseInt(req.body.resolved))) return resp(res, 'resolved_time must be a valid number.', 400);
+        if (isNaN(parseInt(req.body.resolved_time))) return resp(res, 'resolved_time must be a valid number.', 400);
         if (typeof req.body.resolved_time === 'string') req.body.resolved_time = parseInt(req.body.resolved_time);
         if (new Date(req.body.resolved_time).toString() === 'Invalid Date') return resp(res, 'resolved_time must be a valid date number.', 400);
         
