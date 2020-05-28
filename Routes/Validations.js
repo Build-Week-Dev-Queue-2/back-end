@@ -310,7 +310,7 @@ const validateNewComment = async (req, res, next) => {
     if (typeof req.body.ticket_id === 'string') req.body.ticket_id = parseInt(req.body.ticket_id);
     
     // Check to make sure author is a valid user.
-    const ticketExists = await db.getUserByID(req.body.ticket);
+    const ticketExists = await db.getTicketByID(req.body.ticket_id);
     if (!ticketExists) return resp(res, 'Ticket does not exist.', 404);
 
     // Set defaults.
