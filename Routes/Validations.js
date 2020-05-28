@@ -122,7 +122,7 @@ const validateNewTicket = async (req, res, next) => {
     if (req.body.content.length <= 0) return resp(res, 'Content must be at least 1 character long.', 400);
 
     // Make sure author is valid number.
-    if (isNaN(parseInt(req.body.author))) return resp(resp, 'Author must be a valid user ID.', 400);
+    if (isNaN(parseInt(req.body.author))) return resp(res, 'Author must be a valid user ID.', 400);
     // Parse author to int
     if (typeof req.body.author === 'string') req.body.author = parseInt(req.body.author);
     
@@ -133,7 +133,7 @@ const validateNewTicket = async (req, res, next) => {
     // Make sure category ID is valid number.
     if (isNaN(parseInt(req.body.category_id))) {
         const cats = await db.getAllCatgories();
-        return resp(resp, {
+        return resp(res, {
             message: 'category_id must be a valid category ID. See below:',
             categories: cats
         }, 400);
@@ -145,7 +145,7 @@ const validateNewTicket = async (req, res, next) => {
     const catExists = await db.getCategoryByID(req.body.category_id);
     if (!catExists) {
         const cats = await db.getAllCatgories();
-        return resp(resp, {
+        return resp(res, {
             message: 'category_id must be a valid category ID. See below:',
             categories: cats
         }, 400);
@@ -173,7 +173,7 @@ const validateUpdateTicket = async (req, res, next) => {
     if (!req.params.id) return resp(res, 'Please provide a valid ID parameter.', 400);
     if (isNaN(parseInt(req.params.id))) return resp(res, 'Please provide a valid ID parameter.', 400);
     const ticketExists = await db.getTicketByID(req.params.id);
-    if (!ticketExists) return resp(resp, 'Ticket does not exist.', 404);
+    if (!ticketExists) return resp(res, 'Ticket does not exist.', 404);
 
     if (req.body.title) {
         // Make sure title is string and is at least one character long.
@@ -199,7 +199,7 @@ const validateUpdateTicket = async (req, res, next) => {
 
     if (req.body.author) {
         // Make sure author is valid number.
-        if (isNaN(parseInt(req.body.author))) return resp(resp, 'Author must be a valid user ID.', 400);
+        if (isNaN(parseInt(req.body.author))) return resp(res, 'Author must be a valid user ID.', 400);
         // Parse author to int
         if (typeof req.body.author === 'string') req.body.author = parseInt(req.body.author);
         
@@ -236,7 +236,7 @@ const validateUpdateTicket = async (req, res, next) => {
 
     if (req.body.resolved_by) {
         // Make sure resolved_by is valid number.
-        if (isNaN(parseInt(req.body.resolved_by))) return resp(resp, 'Resolved_by must be a valid user ID.', 400);
+        if (isNaN(parseInt(req.body.resolved_by))) return resp(res, 'Resolved_by must be a valid user ID.', 400);
         // Parse resolved_by to int
         if (typeof req.body.resolved_by === 'string') req.body.resolved_by = parseInt(req.body.resolved_by);
         
@@ -254,7 +254,7 @@ const validateUpdateTicket = async (req, res, next) => {
         // Make sure category ID is valid number.
         if (isNaN(parseInt(req.body.category_id))) {
             const cats = await db.getAllCatgories();
-            return resp(resp, {
+            return resp(res, {
                 message: 'category_id must be a valid category ID. See below:',
                 categories: cats
             }, 400);
@@ -266,7 +266,7 @@ const validateUpdateTicket = async (req, res, next) => {
         const catExists = await db.getCategoryByID(req.body.category_id);
         if (!catExists) {
             const cats = await db.getAllCatgories();
-            return resp(resp, {
+            return resp(res, {
                 message: 'category_id must be a valid category ID. See below:',
                 categories: cats
             }, 400);
@@ -296,7 +296,7 @@ const validateNewComment = async (req, res, next) => {
     if(typeof req.body.message !== 'string' || req.body.message.length <= 0) return resp(res, 'Message must be a string with one or more characters.', 400);
 
     // Make sure author is valid number.
-    if (isNaN(parseInt(req.body.author))) return resp(resp, 'Author must be a valid user ID.', 400);
+    if (isNaN(parseInt(req.body.author))) return resp(res, 'Author must be a valid user ID.', 400);
     // Parse author to int
     if (typeof req.body.author === 'string') req.body.author = parseInt(req.body.author);
     
@@ -305,7 +305,7 @@ const validateNewComment = async (req, res, next) => {
     if (!authorExists) return resp(res, 'Author does not exist.', 404);
 
     // Make sure author is valid number.
-    if (isNaN(parseInt(req.body.ticket_id))) return resp(resp, 'Ticket ID must be a valid number.', 400);
+    if (isNaN(parseInt(req.body.ticket_id))) return resp(res, 'Ticket ID must be a valid number.', 400);
     // Parse author to int
     if (typeof req.body.ticket_id === 'string') req.body.ticket_id = parseInt(req.body.ticket_id);
     
@@ -332,14 +332,14 @@ const validateUpdateComment = async (req, res, next) => {
     if (!req.params.id) return resp(res, 'Please provide a valid ID parameter.', 400);
     if (isNaN(parseInt(req.params.id))) return resp(res, 'Please provide a valid ID parameter.', 400);
     const commentExists = await db.getCommentByID(req.params.id);
-    if (!commentExists) return resp(resp, 'Comment does not exist.', 404);
+    if (!commentExists) return resp(res, 'Comment does not exist.', 404);
 
     if (req.body.id) return resp(res, 'ID can not be updated.', 400);
     if (req.body.posted_time) return resp(res, 'Posted time can not be updated.', 400);
 
     if (req.body.author) {
         // Make sure author is valid number.
-        if (isNaN(parseInt(req.body.author))) return resp(resp, 'Author must be a valid user ID.', 400);
+        if (isNaN(parseInt(req.body.author))) return resp(res, 'Author must be a valid user ID.', 400);
         // Parse author to int
         if (typeof req.body.author === 'string') req.body.author = parseInt(req.body.author);
         
@@ -366,7 +366,7 @@ const validateUpdateComment = async (req, res, next) => {
 
     if (req.body.ticket_id) {
         // Make sure author is valid number.
-        if (isNaN(parseInt(req.body.ticket_id))) return resp(resp, 'Ticket ID must be a valid number.', 400);
+        if (isNaN(parseInt(req.body.ticket_id))) return resp(res, 'Ticket ID must be a valid number.', 400);
         // Parse author to int
         if (typeof req.body.ticket_id === 'string') req.body.ticket_id = parseInt(req.body.ticket_id);
         
