@@ -68,6 +68,9 @@
 	-> GET '/api/users/${id}'
 		- Returns a single user object by ID.
 		- Status: 200.
+	-> GET '/api/users/${id}/tickets'
+		- Returns an array of ticket by author (user id).
+		- Status: 200.
 	-> PUT '/api/users/${id}'
 		- Request Body (one or more):
 			- Username -> 'username'

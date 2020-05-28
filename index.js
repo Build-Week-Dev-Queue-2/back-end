@@ -22,11 +22,6 @@ server.get('/', (req, res) => {
     })
 });
 
-// -> Slack
-const token = process.env.SLACK_TOKEN;
-const Slack = require('slack');
-const bot = new Slack({ token });
-
 // -> Routes
 server.use('/api/users', require('./Routes/Users'));
 server.use('/api/tickets', require('./Routes/Tickets'));

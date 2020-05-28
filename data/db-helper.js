@@ -115,8 +115,8 @@ module.exports = {
             't.resolved_time',
             'c.name as category'
         ),
-    getTicketsByAuthor: name => db('tickets as t')
-        .where('u.username', name)
+    getTicketsByAuthor: id => db('tickets as t')
+        .where('u.id', id)
         .join('users as u', 'u.id', '=', 't.author')
         .join('categories as c', 'c.id', '=', 't.category_id')
         .select(

@@ -31,6 +31,15 @@ server.get('/:id', protected, (req, res) => {
         .catch(error => resp(res, error.message, 500));
 })
 
+// -> GET '/:id/tickets' - Array of tickets by author.
+server.get('/:id/tickets', protected, (req, res) => {
+    const { id } = req.params;
+    
+    return db.getTicketsByAuthor(id)
+        .then(tickets => resp(res, tickets))
+        .catch(error => resp(res, error.message, 500));
+})
+
 // -> PUT '/:id' - Update a user by ID
 server.put('/:id', protected, validateUpdateUser, (req, res) => {
     const { id } = req.params;
