@@ -6,7 +6,7 @@ const db = require('../data/db-helper');
 
 // -> Validations
 const {
-    protected,
+    protectedRoute,
     validateUpdateTicket,
     validateNewTicket
 } = require('./Validations');
@@ -15,14 +15,14 @@ const {
 const { resp } = require('../Utils');
 
 // -> GET '/' - All tickets.
-server.get('/', protected, (req, res) => {
+server.get('/', protectedRoute, (req, res) => {
     return db.getAllTickets()
         .then(tickets => resp(res, tickets))
         .catch(error => resp(res, error.message, 500));
 })
 
 // -> GET '/:id' - Single ticket by ID
-server.get('/:id', protected, (req, res) => {
+server.get('/:id', protectedRoute, (req, res) => {
     const { id } = req.params;
     
     return db.getTicketByID(id)
@@ -40,7 +40,7 @@ server.get('/:id/comments', (req, res) => {
 })
 
 // -> PUT '/:id' - Update a ticket by ID
-server.put('/:id', protected, validateUpdateTicket, (req, res) => {
+server.put('/:id', protectedRoute, validateUpdateTicket, (req, res) => {
     const { id } = req.params;
     
     return db.updateTicket(id, req.ticket)
@@ -52,7 +52,7 @@ server.put('/:id', protected, validateUpdateTicket, (req, res) => {
 });
 
 // -> POST '/' - Create new ticket.
-server.post('/', protected, validateNewTicket, (req, res) => {
+server.post('/', protectedRoute, validateNewTicket, (req, res) => {
     return db.addTicket(req.ticket)
         .then(async ([id]) => {
             const ticket = await db.getTicketByID(id);
@@ -62,7 +62,7 @@ server.post('/', protected, validateNewTicket, (req, res) => {
 });
 
 // -> DELETE '/:id' - Delete a user by ID
-server.delete('/:id', protected, (req, res) => {
+server.delete('/:id', protectedRoute, (req, res) => {
     const { id } = req.params;
     
     return db.removeTicket(id)

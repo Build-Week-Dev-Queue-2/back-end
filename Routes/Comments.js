@@ -6,7 +6,7 @@ const db = require('../data/db-helper');
 
 // -> Validations
 const {
-    protected,
+    protectedRoute,
     validateNewComment,
     validateUpdateComment
 } = require('./Validations');
@@ -15,14 +15,14 @@ const {
 const { resp } = require('../Utils');
 
 // -> GET '/' - All comments.
-server.get('/', protected, (req, res) => {
+server.get('/', protectedRoute, (req, res) => {
     return db.getAllComments()
         .then(comments => resp(res, comments))
         .catch(error => resp(res, error.message, 500));
 })
 
 // -> GET '/:id' - Single comment by ID
-server.get('/:id', protected, (req, res) => {
+server.get('/:id', protectedRoute, (req, res) => {
     const { id } = req.params;
     
     return db.getCommentByID(id)
@@ -31,7 +31,7 @@ server.get('/:id', protected, (req, res) => {
 })
 
 // -> PUT '/:id' - Update a comment by ID
-server.put('/:id', protected, validateUpdateComment, (req, res) => {
+server.put('/:id', protectedRoute, validateUpdateComment, (req, res) => {
     const { id } = req.params;
     
     return db.updateComment(id, req.comment)
@@ -43,7 +43,7 @@ server.put('/:id', protected, validateUpdateComment, (req, res) => {
 });
 
 // -> POST '/' - Create new comment.
-server.post('/', protected, validateNewComment, (req, res) => {
+server.post('/', protectedRoute, validateNewComment, (req, res) => {
     return db.addComment(req.comment)
         .then(async ([id]) => {
             const comment = await db.getCommentByID(id);
@@ -53,7 +53,7 @@ server.post('/', protected, validateNewComment, (req, res) => {
 });
 
 // -> DELETE '/:id' - Delete a user by ID
-server.delete('/:id', protected, (req, res) => {
+server.delete('/:id', protectedRoute, (req, res) => {
     const { id } = req.params;
     
     return db.removeComment(id)

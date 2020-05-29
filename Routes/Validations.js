@@ -404,7 +404,7 @@ const validateLogin = async (req, res, next) => {
     next();
 };
 
-const protected = async (req, res, next) => {
+const protectedRoute = async (req, res, next) => {
     const token = req.headers.authorization;
     if (!token)
         return resp(res, 'Client must provide authorization information.', 400);
@@ -426,7 +426,7 @@ module.exports = {
 
     // -> Authentication Validations
     validateLogin,
-    protected,
+    protectedRoute,
 
     // -> Ticket Validations
     validateNewTicket,

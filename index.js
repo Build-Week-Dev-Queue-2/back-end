@@ -30,4 +30,4 @@ server.use('/slack', require('./Routes/Slack'));
 server.use('/auth', require('./Routes/Auth'));
 
 const port = process.env.PORT || 5000;
-server.listen(port, () => console.log(`API started on port ${port}.`));  
+module.exports = server.listen(port, () => console.log(`API started on port ${port}.`));  

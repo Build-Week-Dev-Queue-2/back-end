@@ -6,7 +6,7 @@ const db = require('../data/db-helper');
 
 // -> Validations
 const {
-    protected,
+    protectedRoute,
     validateUpdateUser
 } = require('./Validations');
 
@@ -14,7 +14,7 @@ const {
 const { resp, removePassword } = require('../Utils');
 
 // -> GET '/' - All users.
-server.get('/', protected, (req, res) => {
+server.get('/', protectedRoute, (req, res) => {
     return db.getAllUsers()
         .then(users => {
             resp(res, removePassword(users))
@@ -23,7 +23,7 @@ server.get('/', protected, (req, res) => {
 })
 
 // -> GET '/:id' - Single user by ID
-server.get('/:id', protected, (req, res) => {
+server.get('/:id', protectedRoute, (req, res) => {
     const { id } = req.params;
     
     return db.getUserByID(id)
@@ -32,7 +32,7 @@ server.get('/:id', protected, (req, res) => {
 })
 
 // -> GET '/:id/tickets' - Array of tickets by author.
-server.get('/:id/tickets', protected, (req, res) => {
+server.get('/:id/tickets', protectedRoute, (req, res) => {
     const { id } = req.params;
     
     return db.getTicketsByAuthor(id)
@@ -41,7 +41,7 @@ server.get('/:id/tickets', protected, (req, res) => {
 })
 
 // -> PUT '/:id' - Update a user by ID
-server.put('/:id', protected, validateUpdateUser, (req, res) => {
+server.put('/:id', protectedRoute, validateUpdateUser, (req, res) => {
     const { id } = req.params;
     
     return db.updateUser(id, req.user)
@@ -54,7 +54,7 @@ server.put('/:id', protected, validateUpdateUser, (req, res) => {
 })
 
 // -> DELETE '/:id' - Delete a user by ID
-server.delete('/:id', protected, (req, res) => {
+server.delete('/:id', protectedRoute, (req, res) => {
     const { id } = req.params;
     
     return db.removeUser(id)
